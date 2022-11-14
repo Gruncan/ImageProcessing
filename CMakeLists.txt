@@ -4,3 +4,5 @@ project(ImageProcessing)
 set(CMAKE_CXX_STANDARD 17)
 
 add_library(ImageProcessing library.cpp)
+
+add_executable(ImageProcessingRun main.cpp)

@@ -21,8 +21,10 @@ int main() {
 
 //    std::cout << image;
 
-    Netpbm::exportImage(image, "test.pgm");
+    Netpbm::PGM inImage;
+    Netpbm::importImageInto(inImage, "test2.pgm");
 
+    std::cout << inImage;
 
 }
 

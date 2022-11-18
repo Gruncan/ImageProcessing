@@ -12,11 +12,19 @@ namespace Netpbm {
     private:
         int colour: 8;
     public:
-        PPM(int width, int height, unsigned char colour) : Netpbm::Netpbm(height, width, 3) {
+        PPM(int width, int height, int colour) : Netpbm::Netpbm(height, width, 3) {
             this->colour = colour;
         }
 
-        int getColour() {
+        PPM(int width, int height) : PPM(height, width, 255) {
+
+        }
+
+        PPM() : Netpbm::Netpbm(3) {
+
+        }
+
+        int getColour() override {
             return this->colour;
         }
     };

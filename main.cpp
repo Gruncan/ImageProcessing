@@ -24,7 +24,24 @@ int main() {
     Netpbm::PGM inImage;
     Netpbm::importImageInto(inImage, "test2.pgm");
 
-    std::cout << inImage;
+    std::cout << inImage << std::endl;
+
+    inImage.invertImage();
+
+    std::cout << "\n" << inImage << std::endl;
+
+    Netpbm::PGM image2 = Netpbm::PGM();
+    inImage.copy(image2);
+
+
+    image2.invertImage();
+    image2 + 2;
+
+    std::cout << "\n" << image2;
+
+
+    Netpbm::exportImage(inImage, "test3.pgm");
+
 
 }
 

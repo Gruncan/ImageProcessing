@@ -11,7 +11,7 @@ namespace Netpbm {
 
     class PGM : public Netpbm::Netpbm {
     private:
-        int colour: 4;
+        int colour;
     public:
         PGM(int width, int height, unsigned char colour) : Netpbm::Netpbm(width, height, 2) {
             this->colour = colour;
@@ -25,9 +25,14 @@ namespace Netpbm {
             this->colour = -1;
         }
 
-        int getColour() override {
+        int getMaxColour() override {
             return this->colour;
         }
+
+        void setMaxColour(int c) override {
+            this->colour = c;
+        }
+
 
     };
 

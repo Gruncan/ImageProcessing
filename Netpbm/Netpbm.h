@@ -15,12 +15,14 @@ namespace Netpbm {
 
     class Netpbm {
     private:
+        int VERSION_N: 4;
+    protected:
         int *imageArray;
         unsigned int height;
         unsigned int width;
         unsigned int n;
-        int VERSION_N: 4;
-    protected:
+
+
         Netpbm(unsigned int width, unsigned int height, int version) {
             this->imageArray = (int *) malloc(height * width * sizeof(int));
 
@@ -55,11 +57,13 @@ namespace Netpbm {
             return this->imageArray;
         }
 
-        void operator+(int const scaler) {
+        Netpbm *operator+(int const scaler) {
             for (int i = 0; i < this->n; i++) {
-                this->imageArray[i] += scaler;
+                this->imageArray[i] = (this->imageArray[i] + scaler) % this->getMaxColour();
             }
+            return this;
         }
+
 
         void setImageArray(const int array[]) {
             if (this->imageArray == nullptr) {
@@ -114,8 +118,25 @@ namespace Netpbm {
             return this->imageArray[(this->height * i) + j];
         }
 
+        void invertImage() {
+            int max_colour = this->getMaxColour();
+            for (int i = 0; i < this->n; ++i) {
+                this->imageArray[i] = abs(this->imageArray[i] - max_colour);
+            }
+        }
 
-        virtual int getColour() = 0;
+        void copy(Netpbm &target) {
+            target.width = this->width;
+            target.height = this->height;
+            target.n = this->n;
+            target.setMaxColour(this->getMaxColour());
+            target.VERSION_N = this->VERSION_N;
+            target.setImageArray(this->imageArray);
+        }
+
+        virtual int getMaxColour() = 0;
+
+        virtual void setMaxColour(int colour) = 0;
 
 
     };
@@ -128,7 +149,7 @@ namespace Netpbm {
         // Headers
         outImage << "P" << image.getVersion() << std::endl;
         outImage << image.getWidth() << " " << image.getHeight() << std::endl;
-        int colour = image.getColour();
+        int colour = image.getMaxColour();
         if (colour != 0)
             outImage << colour << std::endl;
 
@@ -152,7 +173,6 @@ namespace Netpbm {
 
         return result;
     }
-
 
     void importImageInto(Netpbm &pbm, const std::string &filename) {
         std::ifstream inImage;
@@ -188,6 +208,7 @@ namespace Netpbm {
                 content = (int *) malloc(width * height * sizeof(int));
             } else if (colour == -1) {
                 colour = std::stoi(line);
+                pbm.setMaxColour(colour);
             } else {
                 std::list<int> split = __string_split(line);
                 if (split.size() != width) {
@@ -195,7 +216,7 @@ namespace Netpbm {
                     return;
                 }
                 int c = pos;
-                for (; pos < width + c - 1; pos++) {
+                for (; pos < width + c; pos++) {
                     content[pos] = split.front();
                     split.pop_front();
                 }

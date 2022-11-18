@@ -15,16 +15,16 @@ namespace Netpbm {
 
     class Netpbm {
     private:
-        int VERSION_N: 4;
+        unsigned int VERSION_N: 4;
     protected:
-        int *imageArray;
+        unsigned int *imageArray;
         unsigned int height;
         unsigned int width;
         unsigned int n;
 
 
-        Netpbm(unsigned int width, unsigned int height, int version) {
-            this->imageArray = (int *) malloc(height * width * sizeof(int));
+        Netpbm(unsigned int width, unsigned int height, unsigned int version) {
+            this->imageArray = (unsigned int *) malloc(height * width * sizeof(unsigned int));
 
             this->height = height;
             this->width = width;
@@ -32,7 +32,7 @@ namespace Netpbm {
             this->VERSION_N = version;
         }
 
-        explicit Netpbm(int version) {
+        explicit Netpbm(unsigned int version) {
             this->imageArray = nullptr;
             this->height = -1;
             this->width = -1;
@@ -49,11 +49,11 @@ namespace Netpbm {
             return this->height;
         }
 
-        [[nodiscard]] int getVersion() const {
+        [[nodiscard]] unsigned int getVersion() const {
             return this->VERSION_N;
         }
 
-        int *getImageArray() {
+        unsigned int *getImageArray() {
             return this->imageArray;
         }
 
@@ -64,14 +64,52 @@ namespace Netpbm {
             return this;
         }
 
+        Netpbm *operator+(const Netpbm &vector) {
+            if (this->width != vector.width || this->height != vector.height) {
+                fprintf(stderr, "Unable to add vectors with sizes (%d, %d) + (%d, %d)", this->width, this->height,
+                        vector.width, vector.height);
+                return nullptr;
+            }
+            for (int i = 0; i < this->n; ++i) {
+                this->imageArray[i] = (this->imageArray[i] + vector.imageArray[i]) % this->getMaxColour();
+            }
+            return this;
+        }
 
-        void setImageArray(const int array[]) {
+        Netpbm *operator%(int const scaler) {
+            for (int i = 0; i < this->n; ++i) {
+                this->imageArray[i] %= scaler;
+            }
+            return this;
+        }
+
+        Netpbm *operator*(int const scaler) {
+            for (int i = 0; i < this->n; ++i) {
+                this->imageArray[i] *= scaler;
+            }
+            return this;
+        }
+
+        friend std::ostream &operator<<(std::ostream &os, Netpbm const &pbm) {
+            return os << pbm.getImageArrayString();
+        }
+
+        unsigned int &operator[](int i) {
+            return this->imageArray[i];
+        }
+
+        unsigned int &operator()(int i, int j) {
+            return this->imageArray[(this->height * i) + j];
+        }
+
+
+        void setImageArray(const unsigned int array[]) {
             if (this->imageArray == nullptr) {
                 if (this->width == -1 || this->height == -1) {
                     fprintf(stderr, "Invalid height or width, height: %d, width: %d\n", this->height, this->width);
                     return;
                 }
-                this->imageArray = (int *) malloc(height * width * sizeof(int));
+                this->imageArray = (unsigned int *) malloc(this->height * this->width * sizeof(unsigned int));
             }
             for (int i = 0; i < this->n; ++i) {
                 this->imageArray[i] = array[i];
@@ -79,13 +117,13 @@ namespace Netpbm {
         }
 
 
-        void setWidth(unsigned int width) {
-            this->width = width;
+        void setWidth(unsigned int w) {
+            this->width = w;
             this->__setN();
         }
 
-        void setHeight(unsigned int height) {
-            this->height = height;
+        void setHeight(unsigned int h) {
+            this->height = h;
             this->__setN();
         }
 
@@ -106,22 +144,12 @@ namespace Netpbm {
             return s;
         }
 
-        friend std::ostream &operator<<(std::ostream &os, Netpbm const &pbm) {
-            return os << pbm.getImageArrayString();
-        }
-
-        int &operator[](int i) {
-            return this->imageArray[i];
-        }
-
-        int &operator()(int i, int j) {
-            return this->imageArray[(this->height * i) + j];
-        }
 
         void invertImage() {
-            int max_colour = this->getMaxColour();
+            unsigned int max_colour = this->getMaxColour();
             for (int i = 0; i < this->n; ++i) {
-                this->imageArray[i] = abs(this->imageArray[i] - max_colour);
+                this->imageArray[i] = (this->imageArray[i] > max_colour) ? this->imageArray[i] - max_colour :
+                                      max_colour - this->imageArray[i];
             }
         }
 
@@ -134,10 +162,14 @@ namespace Netpbm {
             target.setImageArray(this->imageArray);
         }
 
-        virtual int getMaxColour() = 0;
+        virtual unsigned int getMaxColour() = 0;
 
-        virtual void setMaxColour(int colour) = 0;
+        virtual void setMaxColour(unsigned int colour) = 0;
 
+
+        ~Netpbm() {
+            free(this->imageArray);
+        }
 
     };
 
@@ -149,12 +181,12 @@ namespace Netpbm {
         // Headers
         outImage << "P" << image.getVersion() << std::endl;
         outImage << image.getWidth() << " " << image.getHeight() << std::endl;
-        int colour = image.getMaxColour();
+        unsigned int colour = image.getMaxColour();
         if (colour != 0)
             outImage << colour << std::endl;
 
         for (int i = 0; i < image.getWidth() * image.getHeight(); ++i) {
-            if (i % image.getHeight() == 0 && i != 0)
+            if (i % image.getWidth() == 0 && i != 0)
                 outImage << std::endl;
 
             outImage << image[i] << " ";
@@ -188,7 +220,7 @@ namespace Netpbm {
         int width = -1;
         int height = -1;
         int colour = -1;
-        int *content;
+        unsigned int *content;
         int pos = 0;
 
         while (std::getline(inImage, line)) {
@@ -205,8 +237,8 @@ namespace Netpbm {
                 pbm.setHeight(height);
                 pbm.setWidth(width);
 
-                content = (int *) malloc(width * height * sizeof(int));
-            } else if (colour == -1) {
+                content = (unsigned int *) malloc(width * height * sizeof(int));
+            } else if (type != "P1" && colour == -1) {
                 colour = std::stoi(line);
                 pbm.setMaxColour(colour);
             } else {

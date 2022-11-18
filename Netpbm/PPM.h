@@ -24,11 +24,11 @@ namespace Netpbm {
 
         }
 
-        int getMaxColour() override {
+        unsigned int getMaxColour() override {
             return this->colour;
         }
 
-        void setMaxColour(int c) override {
+        void setMaxColour(unsigned int c) override {
             this->colour = c;
         }
     };

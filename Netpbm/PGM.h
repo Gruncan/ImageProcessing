@@ -8,16 +8,18 @@
 
 namespace Netpbm {
 
-
+    /**
+     * F scale image going from 0-colour
+     */
     class PGM : public Netpbm::Netpbm {
     private:
-        int colour;
+        unsigned int colour;
     public:
-        PGM(int width, int height, unsigned char colour) : Netpbm::Netpbm(width, height, 2) {
+        PGM(unsigned int width, unsigned int height, unsigned int colour) : Netpbm::Netpbm(width, height, 2) {
             this->colour = colour;
         }
 
-        PGM(int width, int height) : PGM(width, height, 15) {
+        PGM(unsigned int width, unsigned int height) : PGM(width, height, 15) {
 
         }
 
@@ -25,11 +27,11 @@ namespace Netpbm {
             this->colour = -1;
         }
 
-        int getMaxColour() override {
+        unsigned int getMaxColour() override {
             return this->colour;
         }
 
-        void setMaxColour(int c) override {
+        void setMaxColour(unsigned int c) override {
             this->colour = c;
         }
 

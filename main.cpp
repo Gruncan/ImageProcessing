@@ -2,20 +2,37 @@
 #include <fstream>
 #include <iostream>
 #include "Netpbm/PGM.h"
+#include "Netpbm/PBM.h"
+#include "Netpbm/NetpbmUtil.h"
 
 
 using namespace std;
 
 int main() {
+    Netpbm::PBM pbm;
 
+    Netpbm::importImageInto(pbm, "letterj.pbm");
+
+    std::cout << pbm << std::endl << std::endl;
+
+    Netpbm::PGM pgm = Netpbm::fromPBMToPGM(pbm);
+
+//    std::cout << std::endl << pgm;
+
+    Netpbm::exportImage(pgm, "letterj2.pgm");
+
+}
+
+
+void test() {
     Netpbm::PGM image = Netpbm::PGM(5, 5);
 
 
-    int array[] = {0, 3, 3, 3, 3,
-                   0, 3, 0, 0, 0,
-                   0, 3, 3, 3, 0,
-                   0, 3, 0, 0, 0,
-                   0, 3, 0, 0, 0};
+    unsigned int array[] = {0, 3, 3, 3, 3,
+                            0, 3, 0, 0, 0,
+                            0, 3, 3, 3, 0,
+                            0, 3, 0, 0, 0,
+                            0, 3, 0, 0, 0};
 
     image.setImageArray(array);
 
@@ -41,7 +58,5 @@ int main() {
 
 
     Netpbm::exportImage(inImage, "test3.pgm");
-
-
 }
 

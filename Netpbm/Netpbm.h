@@ -239,9 +239,8 @@ namespace Netpbm {
 
         bool r = pbm.importImageBody(file);
 
-        if (!r) {
+        if (!r)
             fprintf(stderr, "Failed to load body of image in file %s.\n", filename.c_str());
-        }
 
 
     }

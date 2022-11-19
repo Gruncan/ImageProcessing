@@ -24,7 +24,7 @@ namespace Netpbm {
         }
 
 
-        std::string fromHexToString(unsigned int i) {
+        static std::string fromHexToString(unsigned int i) {
             unsigned int v1 = i & 0x0000FF;
             unsigned int v2 = (i & 0x00FF00) >> 8;
             unsigned int v3 = (i & 0xFF0000) >> 16;
@@ -35,7 +35,7 @@ namespace Netpbm {
             return stream.str();
         }
 
-        unsigned int fromStringToHex(std::string line) {
+        static unsigned int fromStringToHex(const std::string &line) {
             std::list<unsigned int> split = Netpbm::Netpbm::string_split(line);
             unsigned int v1 = split.front();
             split.pop_front();
@@ -43,7 +43,7 @@ namespace Netpbm {
             split.pop_front();
             unsigned int v3 = split.front();
 
-            unsigned int value = (v3 << 8);
+            unsigned int value = v3 << 8;
             value |= v2;
             value <<= 8;
             value |= v1;
@@ -53,7 +53,7 @@ namespace Netpbm {
 
         bool exportImageBody(std::ofstream &outImage) override {
             for (int i = 0; i < this->width * this->height; ++i) {
-                outImage << this->fromHexToString(this->imageArray[i]);
+                outImage << PPM::fromHexToString(this->imageArray[i]);
             }
             return true;
         }
@@ -70,7 +70,7 @@ namespace Netpbm {
 
             this->imageArray = (unsigned int *) malloc(this->width * this->height * sizeof(unsigned int));
             for (int i = 0; i < this->width * this->height; ++i) {
-                this->imageArray[i] = this->fromStringToHex(body[i]);
+                this->imageArray[i] = PPM::fromStringToHex(body[i]);
             }
             return true;
         }

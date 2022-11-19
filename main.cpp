@@ -9,12 +9,12 @@
 using namespace std;
 
 int main() {
-    Netpbm::PGM pgm;
+    Netpbm::PBM pbm;
 
-    Netpbm::importImageInto(pgm, "test.pgm");
+    Netpbm::importImageInto(pbm, "letterj.pbm");
 
 
-    std::cout << pgm << std::endl;
+    std::cout << pbm << std::endl;
 
 }
 

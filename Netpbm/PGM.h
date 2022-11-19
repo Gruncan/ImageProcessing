@@ -27,9 +27,32 @@ namespace Netpbm {
         }
 
 
-        static void test() {
-            std::cout << "in test" << std::endl;
+        bool exportImageBody(std::ofstream &outImage) override {
+            for (int i = 0; i < this->width * this->height; ++i) {
+                if (i % this->width == 0 && i != 0)
+                    outImage << std::endl;
+
+                outImage << this->imageArray[i] << " ";
+            }
+            return true;
         }
+
+        bool exportImageHeader(std::ofstream &outImage) override {
+            outImage << "P" << this->VERSION_N << std::endl;
+            outImage << this->width << " " << this->height << std::endl;
+            outImage << this->colour;
+            return true;
+        }
+
+        bool importImageBody(std::vector<std::string> &inFile) override {
+            return false;
+        }
+
+        bool importImageHeader(std::vector<std::string> &inFile) override {
+            return false;
+        }
+
+
     };
 
 

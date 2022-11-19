@@ -9,7 +9,6 @@
 using namespace std;
 
 int main() {
-
     Netpbm::PPM ppm;
 
     Netpbm::importImageInto(ppm, "image.ppm");

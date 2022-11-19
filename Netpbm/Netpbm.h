@@ -21,15 +21,17 @@ namespace Netpbm {
         unsigned int height;
         unsigned int width;
         unsigned int n;
+        unsigned int colour;
 
 
-        Netpbm(unsigned int width, unsigned int height, unsigned int version) {
+        Netpbm(unsigned int width, unsigned int height, unsigned int version, unsigned int colour) {
             this->imageArray = (unsigned int *) malloc(height * width * sizeof(unsigned int));
 
             this->height = height;
             this->width = width;
             this->n = height * width;
             this->VERSION_N = version;
+            this->colour = colour;
         }
 
         explicit Netpbm(unsigned int version) {
@@ -38,6 +40,7 @@ namespace Netpbm {
             this->width = -1;
             this->n = -1;
             this->VERSION_N = version;
+            this->colour = -1;
         }
 
     public:
@@ -76,7 +79,7 @@ namespace Netpbm {
             return this;
         }
 
-        Netpbm *operator%(int const scaler) {
+        Netpbm *operator%(unsigned int const scaler) {
             for (int i = 0; i < this->n; ++i) {
                 this->imageArray[i] %= scaler;
             }
@@ -170,9 +173,13 @@ namespace Netpbm {
             target.setImageArray(this->imageArray);
         }
 
-        virtual unsigned int getMaxColour() = 0;
+        unsigned int getMaxColour() {
+            return this->colour;
+        }
 
-        virtual void setMaxColour(unsigned int colour) = 0;
+        void setMaxColour(unsigned int colour) {
+            this->colour = colour;
+        }
 
 
         ~Netpbm() {

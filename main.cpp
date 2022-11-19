@@ -9,6 +9,17 @@
 using namespace std;
 
 int main() {
+
+    Netpbm::PPM ppm;
+
+    Netpbm::importImageInto(ppm, "image.ppm");
+
+
+    std::cout << ppm << std::endl;
+
+}
+
+void test2() {
     Netpbm::PGM pgm;
 
     Netpbm::importImageInto(pgm, "test.pgm");
@@ -20,7 +31,6 @@ int main() {
     std::cout << std::endl << pbm;
 
     Netpbm::exportImage(pbm, "test111.pbm");
-
 }
 
 

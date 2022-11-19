@@ -13,10 +13,9 @@ namespace Netpbm {
      */
     class PGM : public Netpbm::Netpbm {
     private:
-        unsigned int colour;
     public:
-        PGM(unsigned int width, unsigned int height, unsigned int colour) : Netpbm::Netpbm(width, height, 2) {
-            this->colour = colour;
+        PGM(unsigned int width, unsigned int height, unsigned int colour) : Netpbm::Netpbm(width, height, 2, colour) {
+
         }
 
         PGM(unsigned int width, unsigned int height) : PGM(width, height, 15) {
@@ -27,15 +26,10 @@ namespace Netpbm {
             this->colour = -1;
         }
 
-        unsigned int getMaxColour() override {
-            return this->colour;
+
+        static void test() {
+            std::cout << "in test" << std::endl;
         }
-
-        void setMaxColour(unsigned int c) override {
-            this->colour = c;
-        }
-
-
     };
 
 

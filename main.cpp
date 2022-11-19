@@ -9,17 +9,17 @@
 using namespace std;
 
 int main() {
-    Netpbm::PBM pbm;
+    Netpbm::PGM pgm;
 
-    Netpbm::importImageInto(pbm, "letterj.pbm");
+    Netpbm::importImageInto(pgm, "test.pgm");
 
-    std::cout << pbm << std::endl << std::endl;
+    std::cout << pgm << std::endl << std::endl;
 
-    Netpbm::PGM pgm = Netpbm::fromPBMToPGM(pbm);
+    Netpbm::PBM pbm = Netpbm::fromPGMToPBM(pgm);
 
-//    std::cout << std::endl << pgm;
+    std::cout << std::endl << pbm;
 
-    Netpbm::exportImage(pgm, "letterj2.pgm");
+    Netpbm::exportImage(pbm, "test111.pbm");
 
 }
 

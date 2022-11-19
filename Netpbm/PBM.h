@@ -12,21 +12,23 @@ namespace Netpbm {
      * Most basic 0-1 image
      */
     class PBM : public Netpbm::Netpbm {
+    private:
+        unsigned int colour;
     public:
         PBM(unsigned int width, unsigned int height) : Netpbm::Netpbm(width, height, 1) {
-
+            this->colour = -1;
         }
 
         PBM() : Netpbm::Netpbm(1) {
-
+            this->colour = -1;
         }
 
         void setMaxColour(unsigned int colour) override {
-
+            this->colour = colour;
         }
 
         unsigned int getMaxColour() override {
-            return -1;
+            return this->colour;
         }
 
     };

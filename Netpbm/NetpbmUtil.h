@@ -16,10 +16,6 @@ namespace Netpbm {
 
         PGM convert = PGM(copy.getWidth(), copy.getHeight());
 
-        std::cout << copy << std::endl;
-
-        std::cout << "\n" << convert << std::endl;
-
 
         convert.setImageArray(copy.getImageArray());
 
@@ -30,6 +26,25 @@ namespace Netpbm {
         convert.invertImage();
 
         return convert;
+    }
+
+    PBM fromPGMToPBM(PGM &pgm) {
+        PGM copy;
+        pgm.copy(copy);
+
+        PBM convert = PBM(copy.getWidth(), copy.getHeight());
+
+        convert.setImageArray(copy.getImageArray());
+        convert != 0;
+
+        convert.setMaxColour(1);
+
+        convert.invertImage();
+
+        convert.setMaxColour(-1);
+
+        return convert;
+
     }
 
 

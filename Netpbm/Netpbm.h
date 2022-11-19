@@ -83,12 +83,20 @@ namespace Netpbm {
             return this;
         }
 
-        Netpbm *operator*(int const scaler) {
+        Netpbm *operator*(unsigned int const scaler) {
             for (int i = 0; i < this->n; ++i) {
                 this->imageArray[i] *= scaler;
             }
             return this;
         }
+
+        Netpbm *operator!=(unsigned int const scaler) {
+            for (int i = 0; i < this->n; ++i) {
+                this->imageArray[i] = this->imageArray[i] != scaler;
+            }
+            return this;
+        }
+
 
         friend std::ostream &operator<<(std::ostream &os, Netpbm const &pbm) {
             return os << pbm.getImageArrayString();
@@ -182,7 +190,7 @@ namespace Netpbm {
         outImage << "P" << image.getVersion() << std::endl;
         outImage << image.getWidth() << " " << image.getHeight() << std::endl;
         unsigned int colour = image.getMaxColour();
-        if (colour != 0)
+        if (colour != -1)
             outImage << colour << std::endl;
 
         for (int i = 0; i < image.getWidth() * image.getHeight(); ++i) {

@@ -9,13 +9,19 @@
 using namespace std;
 
 int main() {
-
     Netpbm::PPM ppm;
 
     Netpbm::importImageInto(ppm, "image.ppm");
 
 
     std::cout << ppm << std::endl;
+
+    ppm.invertImage();
+
+    std::cout << ppm << std::endl;
+
+    Netpbm::exportImage(ppm, "image2.ppm");
+
 
 }
 

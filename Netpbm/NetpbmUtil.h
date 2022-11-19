@@ -47,6 +47,19 @@ namespace Netpbm {
 
     }
 
+    PGM fromPPMToPGM(PPM &ppm) {
+        PPM copy;
+        ppm.copy(copy);
+
+        PGM convert = PGM(copy.getWidth(), copy.getHeight());
+        convert.setImageArray(copy.getImageArray());
+
+        // Drop all values down to 0-15
+        convert % convert.getMaxColour();
+
+        return convert;
+    }
+
 
 }
 

@@ -12,16 +12,15 @@
 
 namespace Netpbm {
 
-
     class Netpbm {
-    private:
-        unsigned int VERSION_N: 4;
+
     protected:
         unsigned int *imageArray;
         unsigned int height;
         unsigned int width;
         unsigned int n;
         unsigned int colour;
+        unsigned int VERSION_N;
 
 
         Netpbm(unsigned int width, unsigned int height, unsigned int version, unsigned int colour) {
@@ -156,7 +155,7 @@ namespace Netpbm {
         }
 
 
-        void invertImage() {
+        virtual void invertImage() {
             unsigned int max_colour = this->getMaxColour();
             for (int i = 0; i < this->n; ++i) {
                 this->imageArray[i] = (this->imageArray[i] > max_colour) ? this->imageArray[i] - max_colour :
@@ -173,108 +172,76 @@ namespace Netpbm {
             target.setImageArray(this->imageArray);
         }
 
-        unsigned int getMaxColour() {
+        [[nodiscard]] unsigned int getMaxColour() const {
             return this->colour;
         }
 
-        void setMaxColour(unsigned int colour) {
-            this->colour = colour;
+        void setMaxColour(unsigned int c) {
+            this->colour = c;
         }
+
+        virtual bool exportImageBody(std::ofstream &outimage) = 0;
+
+        virtual bool exportImageHeader(std::ofstream &outImage) = 0;
+
+        virtual bool importImageBody(std::vector<std::string> &inFile) = 0;
+
+        virtual bool importImageHeader(std::vector<std::string> &inFile) = 0;
 
 
         ~Netpbm() {
             free(this->imageArray);
         }
 
+
+    protected:
+        static std::list<unsigned int> string_split(const std::string &str) {
+            std::list<unsigned int> result;
+            std::istringstream iss(str);
+            for (int s; iss >> s;)
+                result.push_back(s);
+
+            return result;
+        }
+
     };
+
 
 
     bool exportImage(Netpbm &image, const std::string &filename) {
         std::ofstream outImage;
         outImage.open(filename);
 
-        // Headers
-        outImage << "P" << image.getVersion() << std::endl;
-        outImage << image.getWidth() << " " << image.getHeight() << std::endl;
-        unsigned int colour = image.getMaxColour();
-        if (colour != -1)
-            outImage << colour << std::endl;
+        image.exportImageHeader(outImage);
 
-        for (int i = 0; i < image.getWidth() * image.getHeight(); ++i) {
-            if (i % image.getWidth() == 0 && i != 0)
-                outImage << std::endl;
-
-            outImage << image[i] << " ";
-        }
+        image.exportImageBody(outImage);
 
         outImage.close();
 
         return true;
     }
 
-    static std::list<int> __string_split(const std::string &str) {
-        std::list<int> result;
-        std::istringstream iss(str);
-        for (int s; iss >> s;)
-            result.push_back(s);
-
-        return result;
-    }
 
     void importImageInto(Netpbm &pbm, const std::string &filename) {
-        std::ifstream inImage;
-        inImage.open(filename);
-        if (!inImage.is_open()) return;
+        std::vector<std::string> file;
+        std::ifstream inImage(filename);
 
+        if (!inImage.is_open()) return;
 
         std::string line;
 
-        std::list<std::string> lines = std::list<std::string>();
-
-        std::string type;
-        int width = -1;
-        int height = -1;
-        int colour = -1;
-        unsigned int *content;
-        int pos = 0;
-
         while (std::getline(inImage, line)) {
             if (line.rfind('#', 0) == 0) continue;
-
-            if (type.empty()) {
-                type = line;
-            } else if (width == -1) {
-                std::list<int> split = __string_split(line);
-                width = split.front();
-                split.pop_front();
-                height = split.front();
-
-                pbm.setHeight(height);
-                pbm.setWidth(width);
-
-                content = (unsigned int *) malloc(width * height * sizeof(int));
-            } else if (type != "P1" && colour == -1) {
-                colour = std::stoi(line);
-                pbm.setMaxColour(colour);
-            } else {
-                std::list<int> split = __string_split(line);
-                if (split.size() != width) {
-                    fprintf(stderr, "Header doesn't match file content, %zu != %d\n", split.size(), width);
-                    return;
-                }
-                int c = pos;
-                for (; pos < width + c; pos++) {
-                    content[pos] = split.front();
-                    split.pop_front();
-                }
-
-            }
+            file.push_back(line);
         }
 
-        pbm.setImageArray(content);
+        pbm.importImageHeader(file);
 
-        free(content);
-        inImage.close();
+        bool r = pbm.importImageBody(file);
+
+        if (!r)
+            fprintf(stderr, "Failed to load body of image in file %s.\n", filename.c_str());
+
 
     }
 

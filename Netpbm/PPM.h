@@ -24,36 +24,9 @@ namespace Netpbm {
         }
 
 
-        static std::string fromHexToString(unsigned int i) {
-            unsigned int v1 = i & 0x0000FF;
-            unsigned int v2 = (i & 0x00FF00) >> 8;
-            unsigned int v3 = (i & 0xFF0000) >> 16;
-
-            std::stringstream stream;
-            stream << v1 << " " << v2 << " " << v3;
-
-            return stream.str();
-        }
-
-        static unsigned int fromStringToHex(const std::string &line) {
-            std::list<unsigned int> split = Netpbm::Netpbm::string_split(line);
-            unsigned int v1 = split.front();
-            split.pop_front();
-            unsigned int v2 = split.front();
-            split.pop_front();
-            unsigned int v3 = split.front();
-
-            unsigned int value = v3 << 8;
-            value |= v2;
-            value <<= 8;
-            value |= v1;
-
-            return value;
-        }
-
         bool exportImageBody(std::ofstream &outImage) override {
             for (int i = 0; i < this->width * this->height; ++i) {
-                outImage << PPM::fromHexToString(this->imageArray[i]);
+                outImage << PPM::fromHexToString(this->imageArray[i]) << std::endl;
             }
             return true;
         }
@@ -61,7 +34,7 @@ namespace Netpbm {
         bool exportImageHeader(std::ofstream &outImage) override {
             outImage << "P" << this->VERSION_N << std::endl;
             outImage << this->width << " " << this->height << std::endl;
-            outImage << this->colour;
+            outImage << this->colour << std::endl;
             return true;
         }
 
@@ -103,6 +76,63 @@ namespace Netpbm {
             return true;
         }
 
+        void invertImage() override {
+            for (int i = 0; i < this->n; ++i) {
+                std::vector<unsigned int> vec = PPM::fromHexToVec(this->imageArray[i]);
+                this->imageArray[i] = PPM::fromVecToHex(
+                        {this->colour - vec[0], this->colour - vec[1], this->colour - vec[2]});
+            }
+        }
+
+        static unsigned int fromVecToHex(std::vector<unsigned int> vec) {
+            unsigned int v1 = vec[0];
+            unsigned int v2 = vec[1];
+            unsigned int v3 = vec[2];
+
+            unsigned int value = v3 << 8;
+            value |= v2;
+            value <<= 8;
+            value |= v1;
+
+            return value;
+        }
+
+        static std::vector<unsigned int> fromHexToVec(unsigned int i) {
+            unsigned int v1 = i & 0x0000FF;
+            unsigned int v2 = (i & 0x00FF00) >> 8;
+            unsigned int v3 = (i & 0xFF0000) >> 16;
+
+            std::vector<unsigned int> vec = {v1, v2, v3};
+
+            return vec;
+        }
+
+        static std::string fromHexToString(unsigned int i) {
+            unsigned int v1 = i & 0x0000FF;
+            unsigned int v2 = (i & 0x00FF00) >> 8;
+            unsigned int v3 = (i & 0xFF0000) >> 16;
+
+            std::stringstream stream;
+            stream << v1 << " " << v2 << " " << v3;
+
+            return stream.str();
+        }
+
+        static unsigned int fromStringToHex(const std::string &line) {
+            std::list<unsigned int> split = Netpbm::Netpbm::string_split(line);
+            unsigned int v1 = split.front();
+            split.pop_front();
+            unsigned int v2 = split.front();
+            split.pop_front();
+            unsigned int v3 = split.front();
+
+            unsigned int value = v3 << 8;
+            value |= v2;
+            value <<= 8;
+            value |= v1;
+
+            return value;
+        }
     };
 
 

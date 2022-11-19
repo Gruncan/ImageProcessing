@@ -155,7 +155,7 @@ namespace Netpbm {
         }
 
 
-        void invertImage() {
+        virtual void invertImage() {
             unsigned int max_colour = this->getMaxColour();
             for (int i = 0; i < this->n; ++i) {
                 this->imageArray[i] = (this->imageArray[i] > max_colour) ? this->imageArray[i] - max_colour :

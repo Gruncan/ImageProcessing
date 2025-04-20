@@ -1,0 +1,9 @@
+
+
+#ifndef NETPBM_C_WRAPPER
+#define NETPBM_C_WRAPPER
+
+
+
+
+#endif // NETPBM_C_WRAPPER

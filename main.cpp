@@ -5,19 +5,21 @@
 #include "Netpbm/PBM.h"
 #include "Netpbm/NetpbmUtil.h"
 
+#include "Netpbm/NetPbm_wrapper.h"
+#include "Netpbm/PBM_wrapper.h"
 
 using namespace std;
 
 int main() {
-    Netpbm::PBM pbm;
+    auto* pbm = static_cast<Netpbm::PBM*>(create_PBM_empty());
 
-    Netpbm::importImageInto(pbm, "images/letterj.pbm");
+    Netpbm::importImageInto(*pbm, "images/letterj.pbm");
 
-    std::cout << pbm << std::endl;
+    std::cout << *pbm << std::endl;
 
-    pbm.invertImage();
+    pbm->invertImage();
 
-    std::cout << pbm << std::endl;
+    std::cout << *pbm << std::endl;
 
     // Netpbm::exportImage(pbm, "image2.ppm");
 
